@@ -1,0 +1,1 @@
+Jeg er ikke helt ferdig ennå. Jeg har fått to ekstra dagers uttsettelse fra morten. Han ba meg om å levere det jeg har gjort før fristen med denne meldingen i README filen.

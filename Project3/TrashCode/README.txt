@@ -1,1 +1,0 @@
-Jeg er ikke ferdig ennå. Jeg har fått en ukes uttsettelse fra morten fordi jeg leverte sykemeldingen til han. Han ba meg levere det jeg har gjort før fristen med denne meldingen i README filen.
