@@ -1,44 +1,44 @@
-#ifndef wanderer_H
-#define wanderer_H
+#ifndef WANDERER_H
+#define WANDERER_H
 
-// #include "vec3.h"
-// #include "solar_system.h"
-// #include "solver.h"
-#include <armadillo>
+#include "vec3.h"
 #include <cmath>
 #include <fstream>
 #include <iostream>
 #include <vector>
 
-#define _USE_MATH_DEFINES
-
-using std::vector;
 using namespace std;
-using namespace arma;
 
-class wanderer {
-private:
-  double G = 4 * pow(M_PI, 2);
+class wanderer
+{
 
 public:
+  double G = 4*M_PI*M_PI;
   double mass;
-  vec position;
-  vec velocity;
-  vec acceleration;
+  vec3 p;
+  vec3 v;
   double x, y, z;
   double vx, vy, vz;
   double ax, ay, az;
-  vec gforce;
-  double pi = M_PI;
+  string name;
+  vec3 Fg;
+  vec3 Fg_E_J;
 
   wanderer();
-  ~wanderer() {}
-  wanderer(vec position, vec velocity, const double M);
+  wanderer(vec3 position, vec3 velocity, const double M, string w_name);
+  string getName();
+  vec3 getPosition();
+  vec3 getVelocity();
+  double getDistance(double radius);
   double distance(wanderer otherwanderer);
-  vec GForce(wanderer otherwanderer);
-  vec accel(wanderer otherwanderer);
+  vec3 resetForces();
+  vec3 computeTBGForce(wanderer otherwanderer, wanderer anotherone);
+  vec3 computeGForce(wanderer otherwanderer);
+  vec3 acceleration();
+  vec3 TBacceleration();
+  void resetWanderer();
   double kinetic(wanderer otherwanderer);
   double potential(wanderer otherwanderer);
 };
 
-#endif // wanderer_H
+#endif // WANDERER_H

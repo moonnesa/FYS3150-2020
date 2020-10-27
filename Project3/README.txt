@@ -1,1 +1,1 @@
-Jeg er ikke helt ferdig ennå. Jeg har fått to ekstra dagers uttsettelse fra morten. Han ba meg om å levere det jeg har gjort før fristen med denne meldingen i README filen.
+Ferdig!!! Alt fungerer. Har ikke gjort perhilion persision delen resten har jeg fått resulatet for og lagret demog skrevet dem i raporten. Denne koden skriver alle posisjoner av alle palnetene i txt filer som jeg plotter med python.

@@ -1,66 +1,110 @@
 #include "wanderer.h"
-//#include "solver.h"
-// #include "vec3.h"
 
-// Default constructor
-wanderer::wanderer() {
 
-  mass = 1.;
-  position = {0, 0, 0};
-  velocity = {0, 0, 0};
-  x = position(0);
-  y = position(1);
-  z = position(2);
-  vx = velocity(0);
-  vy = velocity(1);
-  vz = velocity(2);
+wanderer::wanderer(){
+    p = vec3(0,0,0);
+    v = vec3(0,0,0);
+    x=0;
+    y=0;
+    z=0;
+    vx=0;
+    vy=0;
+    vz=0;
+    mass = 0.;
+    name = "";
 }
 
-// Constructor creating a wanderer object with known initial condition
-wanderer::wanderer(vec pos, vec vel, const double M) {
+wanderer::wanderer(vec3 position, vec3 velocity, const double M, string N) {
+    p = position;
+    v = velocity;
+    x=p[0];
+    y=p[1];
+    z=p[2];
+    vx=v[0];
+    vy=v[1];
+    vz=v[1];
+    mass = M;
+    name = N;
 
-  mass = M;
-  position = pos;
-  velocity = vel;
-  x = position(0);
-  y = position(1);
-  z = position(2);
-  vx = velocity(0);
-  vy = velocity(1);
-  vz = velocity(2);
 }
 
-// Finds the distance between two objects of the wanderer class
+string wanderer::getName(){
+    return name;
+}
+
+vec3 wanderer::getPosition(){
+    return p;
+}
+vec3 wanderer::getVelocity(){
+    return v;
+}
+
+double wanderer::getDistance(double radius) {
+     return radius;
+}
 double wanderer::distance(wanderer otherwanderer) {
-  double delta_x = this->x - otherwanderer.x;
-  double delta_y = this->y - otherwanderer.y;
-  double delta_z = this->z - otherwanderer.z;
-  // vec dr;
-  // dr = this->position-otherwanderer.position;
-  return sqrt(delta_x * delta_x + delta_y * delta_y + delta_z * delta_z);
-  // return sqrt(dr%dr);
+    double dx = this->x-otherwanderer.x;
+    double dy = this->y-otherwanderer.y;
+    double dz = this->z-otherwanderer.z;
+    //return sqrt(pow(dx, 2) + pow(dy, 2) + pow(dz, 2));
+    return (p-otherwanderer.p).length();
 }
 
-vec wanderer::GForce(wanderer otherwanderer) {
-  double M1, M2, r;
-  vec gforce = zeros(3);
-  M1 = this->mass;
-  M2 = otherwanderer.mass;
-  r = distance(otherwanderer);
-  gforce(0) = -G * (M2 * M1 / pow(r, 3)) * (this->x - otherwanderer.x);
-  gforce(1) = -G * (M2 * M1 / pow(r, 3)) * (this->y - otherwanderer.y);
-  gforce(2) = -G * (M2 * M1 / pow(r, 3)) * (this->z - otherwanderer.z);
-  return gforce;
+vec3 wanderer::resetForces(){
+    Fg = vec3(0,0,0);
+    return Fg;
+
+}
+vec3 wanderer::computeTBGForce(wanderer otherwanderer, wanderer anotherone) {
+    double M1, M2, M3, r;
+    Fg = vec3(0,0,0);
+    M1 = mass;
+    M2 = otherwanderer.mass;
+    M3 = anotherone.mass;
+    r = distance(otherwanderer);
+    //r = 1.0;
+    Fg[0] = (- ((M2 * M1) / pow(r, 3)))*(this->x-otherwanderer.x);
+    Fg[1] = (- ((M2 * M1) / pow(r, 3)))*(this->y-otherwanderer.y);
+    Fg[2] = (- ((M2 * M1) / pow(r, 3)))*(this->z-otherwanderer.z);
+    Fg_E_J[0] = (- ((M3 * M1) / pow(r, 3)))*(this->x-anotherone.x);
+    Fg_E_J[1] = (- ((M3 * M1) / pow(r, 3)))*(this->y-anotherone.y);
+    Fg_E_J[2] = (- ((M3 * M1) / pow(r, 3)))*(this->z-anotherone.z);
+
+    //cout << p[0] <<" "<<p[1]<<" "<<p[2]<< endl;
+    return (Fg+Fg_E_J)*G;
 }
 
-vec wanderer::accel(wanderer otherwanderer) {
-  acceleration = zeros(3);
-  double M2 = otherwanderer.mass;
-  double r = distance(otherwanderer);
-  acceleration(0) = -G * M2 * (this->x - otherwanderer.x) / pow(r, 3);
-  acceleration(1) = -G * M2 * (this->y - otherwanderer.y) / pow(r, 3);
-  acceleration(2) = -G * M2 * (this->z - otherwanderer.z) / pow(r, 3);
-  return acceleration;
+vec3 wanderer::computeGForce(wanderer otherwanderer) {
+    double M1, M2, r;
+    Fg = vec3(0,0,0);
+    M1 = mass;
+    M2 = otherwanderer.mass;
+    r = distance(otherwanderer);
+    //r = 1.0;
+    Fg[0] = (- ((M2 * M1) / pow(r, 3)))*(this->x-otherwanderer.x);
+    Fg[1] = (- ((M2 * M1) / pow(r, 3)))*(this->y-otherwanderer.y);
+    Fg[2] = (- ((M2 * M1) / pow(r, 3)))*(this->z-otherwanderer.z);
+    //cout << p[0] <<" "<<p[1]<<" "<<p[2]<< endl;
+    return Fg*G;
+}
+
+vec3 wanderer::acceleration() {
+    vec3 acceleration = vec3(0,0,0);
+    //double M2 = otherwanderer.mass;
+    //double r = distance(otherwanderer);
+    acceleration[0] = (Fg[0])/mass;
+    acceleration[1] = (Fg[1])/mass;
+    acceleration[2] = (Fg[2])/mass;
+    return acceleration*G;
+}
+vec3 wanderer::TBacceleration() {
+    vec3 acceleration = vec3(0,0,0);
+    //double M2 = otherwanderer.mass;
+    //double r = distance(otherwanderer);
+    acceleration[0] = ((Fg+Fg_E_J)[0])/mass;
+    acceleration[1] = ((Fg+Fg_E_J)[1])/mass;
+    acceleration[2] = ((Fg+Fg_E_J)[2])/mass;
+    return acceleration*G;
 }
 
 double wanderer::kinetic(wanderer otherwanderer) {
@@ -69,4 +113,18 @@ double wanderer::kinetic(wanderer otherwanderer) {
 }
 double wanderer::potential(wanderer otherwanderer) {
   return -G*(this->mass * otherwanderer.mass) / distance(otherwanderer);
+}
+void wanderer::resetWanderer() {
+    p = vec3(0,0,0);
+    v = vec3(0,0,0);
+    Fg = vec3(0,0,0);
+    Fg_E_J = vec3(0,0,0);
+    x=0;
+    y=0;
+    z=0;
+    vx=0;
+    vy=0;
+    vz=0;
+    mass = 0.;
+    name = "";
 }

@@ -1,7 +1,5 @@
 TEMPLATE = app
-QT -= gui
-
-CONFIG += c++11 console
+CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
@@ -14,14 +12,17 @@ LIBS += -LD:\Armadillo\armadillo-9.200-RC1\examples\lib_win64 \
  -llapack_win64_MT
 
 
+
+
 SOURCES += \
-        main.cpp \
+    vec3.cpp \
     wanderer.cpp \
-    solver.cpp \
-    solar_sysytem.cpp
+    solvers.cpp \
+    project3c.cpp
 
 HEADERS += \
+    vec3.h \
     wanderer.h \
-    solver.h \
-    solar_system.h
+    solvers.h
+
 DISTFILES +=
