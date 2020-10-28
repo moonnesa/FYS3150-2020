@@ -18,7 +18,7 @@ SOURCES += \
     vec3.cpp \
     wanderer.cpp \
     solvers.cpp \
-    project3c.cpp
+    solar_system_main.cpp
 
 HEADERS += \
     vec3.h \

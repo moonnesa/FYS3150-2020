@@ -39,6 +39,7 @@ public:
   void resetWanderer();
   double kinetic(wanderer otherwanderer);
   double potential(wanderer otherwanderer);
+  double TotalEnergy(wanderer otherwanderer);
 };
 
 #endif // WANDERER_H

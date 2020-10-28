@@ -42,11 +42,12 @@ vec3 wanderer::getVelocity(){
 double wanderer::getDistance(double radius) {
      return radius;
 }
+//Distance between two planets/wanderers or a wanderer and sun, at the initial positions
 double wanderer::distance(wanderer otherwanderer) {
-    double dx = this->x-otherwanderer.x;
+    /*double dx = this->x-otherwanderer.x;
     double dy = this->y-otherwanderer.y;
     double dz = this->z-otherwanderer.z;
-    //return sqrt(pow(dx, 2) + pow(dy, 2) + pow(dz, 2));
+    return sqrt(pow(dx, 2) + pow(dy, 2) + pow(dz, 2));*/
     return (p-otherwanderer.p).length();
 }
 
@@ -55,6 +56,7 @@ vec3 wanderer::resetForces(){
     return Fg;
 
 }
+//Three body Force caculation
 vec3 wanderer::computeTBGForce(wanderer otherwanderer, wanderer anotherone) {
     double M1, M2, M3, r;
     Fg = vec3(0,0,0);
@@ -73,21 +75,21 @@ vec3 wanderer::computeTBGForce(wanderer otherwanderer, wanderer anotherone) {
     //cout << p[0] <<" "<<p[1]<<" "<<p[2]<< endl;
     return (Fg+Fg_E_J)*G;
 }
-
+// Two body and Multi body force calculation
 vec3 wanderer::computeGForce(wanderer otherwanderer) {
     double M1, M2, r;
     Fg = vec3(0,0,0);
     M1 = mass;
     M2 = otherwanderer.mass;
-    r = distance(otherwanderer);
+    r = this->distance(otherwanderer);
     //r = 1.0;
-    Fg[0] = (- ((M2 * M1) / pow(r, 3)))*(this->x-otherwanderer.x);
-    Fg[1] = (- ((M2 * M1) / pow(r, 3)))*(this->y-otherwanderer.y);
-    Fg[2] = (- ((M2 * M1) / pow(r, 3)))*(this->z-otherwanderer.z);
+    Fg[0] = (-(M2 * M1) / pow(r, 4))*(this->x-otherwanderer.x);
+    Fg[1] = (-(M2 * M1) / pow(r, 4))*(this->y-otherwanderer.y);
+    Fg[2] = (-(M2 * M1) / pow(r, 4))*(this->z-otherwanderer.z);
     //cout << p[0] <<" "<<p[1]<<" "<<p[2]<< endl;
     return Fg*G;
 }
-
+// Two body and Multi body Acceleration calculation
 vec3 wanderer::acceleration() {
     vec3 acceleration = vec3(0,0,0);
     //double M2 = otherwanderer.mass;
@@ -97,6 +99,7 @@ vec3 wanderer::acceleration() {
     acceleration[2] = (Fg[2])/mass;
     return acceleration*G;
 }
+//Three body Acceleration caculation
 vec3 wanderer::TBacceleration() {
     vec3 acceleration = vec3(0,0,0);
     //double M2 = otherwanderer.mass;
@@ -108,12 +111,31 @@ vec3 wanderer::TBacceleration() {
 }
 
 double wanderer::kinetic(wanderer otherwanderer) {
-  double r = this->distance(otherwanderer);
-  return 0.5 * this->mass * (pow(r, 2));
+    double dx = this->x-otherwanderer.x;
+    double dy = this->y-otherwanderer.y;
+    double dz = this->z-otherwanderer.z;
+    double r= sqrt(pow(dx, 2) + pow(dy, 2) + pow(dz, 2));
+    return 0.5 * this->mass * (pow(r, 2));
 }
 double wanderer::potential(wanderer otherwanderer) {
-  return -G*(this->mass * otherwanderer.mass) / distance(otherwanderer);
+    double dx = this->x-otherwanderer.x;
+    double dy = this->y-otherwanderer.y;
+    double dz = this->z-otherwanderer.z;
+    double r= sqrt(pow(dx, 2) + pow(dy, 2) + pow(dz, 2));
+  return -0.5*G*(this->mass * otherwanderer.mass) / pow(r,2);
 }
+//Total energy for circular motion with velocity 2pi for both solver methods, comes to be Etot = Ek+Ep = 1.5e-007 - -5.92176e-006
+
+double wanderer::TotalEnergy(wanderer otherwanderer){
+    double dx = this->x-otherwanderer.x;
+    double dy = this->y-otherwanderer.y;
+    double dz = this->z-otherwanderer.z;
+    double r = sqrt(pow(dx, 2) + pow(dy, 2) + pow(dz, 2));
+    return 0.5 * this->mass * (pow(r, 2))-(-0.5*G*(this->mass * otherwanderer.mass) / pow(r,2));
+    //return this->kinetic(otherwanderer)-this->potential(otherwanderer);
+}
+
+//Reset wanderer objects
 void wanderer::resetWanderer() {
     p = vec3(0,0,0);
     v = vec3(0,0,0);

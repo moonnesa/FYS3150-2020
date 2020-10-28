@@ -90,3 +90,4 @@ inline vec3 operator/(vec3 lhs, double rhs)
 }
 
 #endif // VEC3_H
+
